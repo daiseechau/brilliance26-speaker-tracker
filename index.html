@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brilliance26 Speaker Post Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #17092b;
+    --bg-surface: #211238;
+    --bg-surface-2: #2a1747;
+    --pink: #ff3d8f;
+    --orange: #ffa53d;
+    --gradient: linear-gradient(90deg, var(--pink) 0%, #ff6b4a 50%, var(--orange) 100%);
+    --accent-line: rgba(255, 138, 61, 0.35);
+    --text-primary: #f6f1fb;
+    --text-secondary: #bdaee0;
+    --text-muted: #8474a8;
+    --border-soft: rgba(255, 255, 255, 0.08);
+    --success: #34d399;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    --radius: 16px;
+    --shadow-soft: 0 6px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--bg-primary);
+    background-image:
+      radial-gradient(circle at 15% -10%, rgba(255, 61, 143, 0.16), transparent 45%),
+      radial-gradient(circle at 100% 0%, rgba(255, 165, 61, 0.12), transparent 40%);
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 28px 80px; }
+
+  .gradient-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  header.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .brand-block { display: flex; gap: 20px; align-items: flex-start; }
+  .banner-img {
+    width: 84px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--accent-line);
+    flex-shrink: 0;
+  }
+  header.top h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 56px;
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .last-checked {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; font-size: 13px; color: var(--text-muted);
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); display: inline-block; }
+
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+  .btn-primary { background: var(--gradient); color: #1a0b2e; }
+  .btn-primary:hover { filter: brightness(1.08); }
+
+  .hero-stat {
+    background: linear-gradient(135deg, rgba(255, 61, 143, 0.14), rgba(255, 165, 61, 0.08));
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius);
+    padding: 22px 28px;
+    margin-bottom: 26px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .hero-num {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .hero-label { font-size: 15px; color: var(--text-secondary); }
+  .hero-sub { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 220px;
+    padding: 11px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+  }
+  .search-input::placeholder { color: var(--text-muted); }
+  select.filter-select {
+    padding: 11px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-surface);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+
+  .speaker-grid { display: flex; flex-direction: column; gap: 12px; }
+  .speaker-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    box-shadow: var(--shadow-soft);
+    display: grid;
+    grid-template-columns: 92px 1fr 108px;
+    gap: 18px;
+    align-items: start;
+  }
+  .photo-tile {
+    width: 92px;
+    height: 112px;
+    border-radius: 12px;
+    object-fit: cover;
+    object-position: 88% 25%;
+    border: 2px solid var(--accent-line);
+    box-shadow: 0 0 0 3px rgba(255, 122, 61, 0.12);
+  }
+  .photo-tile.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, var(--bg-surface-2), #3a2360);
+    color: var(--text-secondary);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 26px;
+  }
+  .speaker-name { font-weight: 700; font-size: 15px; }
+  .speaker-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .platform-links { display: flex; gap: 8px; margin-top: 8px; }
+  .icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--bg-surface-2);
+    color: var(--text-secondary);
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .icon-link:hover { color: var(--orange); background: rgba(255, 165, 61, 0.12); }
+  .post-item { margin-bottom: 8px; padding: 10px 14px; border-radius: 10px; background: var(--bg-surface-2); font-size: 13px; border-left: 3px solid var(--pink); }
+  .post-item.instagram { border-left-color: var(--orange); }
+  .post-type {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 165, 61, 0.15);
+    color: var(--orange);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .post-snippet { color: var(--text-primary); font-style: italic; }
+  .post-link { display: inline-block; margin-top: 5px; font-size: 12px; color: var(--orange); text-decoration: none; font-weight: 600; }
+  .post-link:hover { text-decoration: underline; }
+  .no-post { color: var(--text-muted); font-size: 13px; font-style: italic; }
+  .ambiguous { color: #e8b95a; font-size: 13px; }
+
+  .badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    text-align: center;
+    justify-self: end;
+  }
+  .badge.confirmed { background: rgba(52, 211, 153, 0.15); color: var(--success); }
+  .badge.pending { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
+  .badge.review { background: rgba(232, 185, 90, 0.15); color: #e8b95a; }
+
+  footer.page-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .test-panel {
+    margin-top: 30px;
+    border-radius: var(--radius);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-soft);
+    overflow: hidden;
+  }
+  .test-panel summary {
+    cursor: pointer;
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .test-results { padding: 0 20px 18px; font-size: 12px; }
+  .test-row { display: flex; gap: 8px; padding: 4px 0; }
+  .test-pass { color: var(--success); }
+  .test-fail { color: var(--pink); font-weight: 700; }
+
+  @media print {
+    @page { size: letter portrait; margin: 9mm; }
+    body { background: white !important; color: #1c1424 !important; }
+    .controls, .btn-print, .test-panel, .platform-links { display: none !important; }
+    .no-post, .ambiguous, .post-link { display: none !important; }
+    .gradient-text { -webkit-text-fill-color: initial; background: none; color: #d1276b !important; }
+    .wrap { max-width: 100%; padding: 0; }
+    header.top { break-after: avoid; margin-bottom: 8px; }
+    .brand-block { gap: 12px; }
+    .banner-img { width: 40px; box-shadow: none; }
+    header.top h1 { font-size: 24px; }
+    .last-checked { margin-top: 3px; }
+    .hero-stat {
+      background: #fdf1f6; border: 1px solid #f0c9dc; box-shadow: none;
+      padding: 6px 16px; margin-bottom: 8px;
+    }
+    .hero-num { font-size: 22px; -webkit-text-fill-color: initial; background: none; color: #d1276b !important; }
+    .hero-label, .hero-sub { font-size: 10px; }
+    .speaker-grid { gap: 0; }
+    .speaker-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 3px 8px; border-radius: 0; box-shadow: none;
+      border: none; border-bottom: 1px solid #ece5f0;
+      background: white; break-inside: avoid;
+    }
+    .speaker-card > div:nth-child(2) { flex: 1; }
+    .photo-tile { width: 24px; height: 24px; border-radius: 50%; border-width: 1px; box-shadow: none; }
+    .photo-tile.placeholder { font-size: 9px; background: #f2edf7; color: #6b5c8a; }
+    .speaker-name { font-size: 11px; }
+    .badge { font-size: 8px; padding: 2px 8px; }
+    .post-item {
+      margin-bottom: 0; margin-top: 2px; padding: 2px 8px;
+      border-left-width: 2px; background: #f9f5fb; font-size: 9px;
+      color: #4a3a5c;
+    }
+    .post-snippet { font-size: 9px; color: #2a1a3d; }
+    .post-type { font-size: 7px; padding: 1px 6px; margin-right: 5px; background: #fde9d4; color: #b5590a; }
+  }
+
+  @media screen and (max-width: 768px) {
+    .speaker-card { grid-template-columns: 1fr; }
+    .photo-tile { width: 100%; height: 140px; }
+    .badge { justify-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand-block">
+      <img class="banner-img" src="images/brilliance26-speaker-lineup.jpg" alt="Brilliance26 Speaker Lineup graphic">
+      <div>
+        <h1 class="gradient-text">Speaker Post Tracker</h1>
+        <div class="last-checked"><span class="dot"></span><span id="lastCheckedText">Last checked —</span></div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-print" id="printBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Save as PDF
+    </button>
+  </header>
+
+  <div class="hero-stat" id="summaryRow"></div>
+
+  <div class="controls">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search speaker name...">
+    <select class="filter-select" id="statusFilter">
+      <option value="all">All statuses</option>
+      <option value="confirmed">Confirmed post found</option>
+      <option value="review">Needs review</option>
+      <option value="pending">No post found yet</option>
+    </select>
+  </div>
+
+  <div class="speaker-grid" id="speakerGrid"></div>
+
+  <details class="test-panel">
+    <summary id="testSummary">Test harness — running...</summary>
+    <div class="test-results" id="testResults"></div>
+  </details>
+
+  <footer class="page-footer">
+    <span>Brilliance26 Speaker Post Tracker · v0.1.0</span>
+    <span>Built with HAUTE</span>
+  </footer>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// DATA — this block is updated by the weekly automated check.
+// Each run replaces SPEAKER_DATA and updates META.lastChecked.
+// ---------------------------------------------------------------------------
+const META = {
+  lastChecked: "2026-08-20",
+  checkFrequency: "Weekly (automated)"
+};
+
+const SPEAKER_DATA = [
+  { name: "Jessica Shepherd", linkedin: "linkedin.com/in/jessica-shepherd-md-mba-facog-5ba9ab66", instagram: "@jessicashepherdmd",
+    photo: "images/speakers/jessica-shepherd.jpg",
+    posts: [{ platform: "linkedin", type: "Repost", date: "2026-07-17", snippet: "Bringing the heat to #brilliance26! So excited", url: "https://linkedin.com/posts/jessica-shepherd-md-mba-facog-5ba9ab66_brilliance26-activity-7483953557306621952-DMQn" }],
+    status: "confirmed" },
+  { name: "Candace Doby", linkedin: "linkedin.com/in/candacedoby", instagram: "@candacedoby",
+    photo: "images/speakers/candace-doby.jpg",
+    posts: [{ platform: "linkedin", type: "Repost", date: "2026-07-17", snippet: "Excited to be in the room with so much brilliance and share some of my own", url: "https://linkedin.com/posts/candacedoby_excited-to-be-in-the-room-with-so-much-brilliance-activity-7484079419981017088-2kKj" }],
+    status: "confirmed" },
+  { name: "Therese Gopaul-Robinson", linkedin: "linkedin.com/in/theresegopaul-robinson", instagram: "@therese_gopaulrobinson",
+    photo: "images/speakers/therese-gopaul-robinson.jpg",
+    posts: [{ platform: "linkedin", type: "Photo", date: "2026-07-21", snippet: "Keynote recap: \"The Work Behind the Work\" at Vituity's Brilliance '26", url: "https://linkedin.com/posts/theresegopaul-robinson_brilliance26-womeninhealthcare-healthcareleadership-activity-7485328835605897216-gsX0" }],
+    status: "confirmed" },
+  { name: "Cheldin Barlatt Rumer", linkedin: "linkedin.com/in/cheldinbarlatt", instagram: "@cheldinbarlatt",
+    photo: "images/speakers/cheldin-barlatt-rumer.jpg",
+    posts: [{ platform: "linkedin", type: "Text", date: "2026-06-24", snippet: "ATLANTA, HERE I COME! I can't wait for #Brilliance26 from Vituity — \"Women Creating the Future of Health\"", url: "https://linkedin.com/posts/cheldinbarlatt_brilliance26-brilliance26-womeninhealthcare-activity-7475665634199212033-oJXI" }],
+    status: "confirmed" },
+  { name: "Irena \"Ren\" Vitkovitsky", linkedin: "linkedin.com/in/irena-vitkovitsky-44688b97", instagram: "",
+    photo: "images/speakers/irena-vitkovitsky.jpg",
+    posts: [{ platform: "linkedin", type: "Text", date: "2026-08-04", snippet: "As Vice President of Operations at Vituity, I am thrilled to speak at our upcoming event, Brilliance26, Women Creating the Future of Health, at the Hilton Atlanta on October 15! In our session on \"Clinical Leadership,\" Nicole Braxley and Payton McGowen and I will discuss how physician leaders can transition from clinical execution to strategic design.", url: "https://www.linkedin.com/posts/irena-vitkovitsky-44688b97_brilliance26-clinicalleadership-physicianleaders-activity-7490459260162555904-9_Tw" }],
+    status: "confirmed" },
+  { name: "Alicia O'Brien", linkedin: "linkedin.com/in/alicia-c-obrien", instagram: "",
+    photo: "images/speakers/alicia-obrien.jpg",
+    posts: [], status: "pending" },
+  { name: "Allison Kassir", linkedin: "linkedin.com/in/allison-kassir-a3690725", instagram: "",
+    photo: "images/speakers/allison-kassir.jpg",
+    posts: [], status: "pending" },
+  { name: "Diane L. Martin", linkedin: "linkedin.com/in/dianelmartin", instagram: "",
+    photo: "images/speakers/diane-l-martin.jpg",
+    posts: [{ platform: "linkedin", type: "Text", date: "2026-07-28", snippet: "Women in Health takes the national stage. It's an honor to be invited by Imamu Tomlinson, MD, MBA, CEO, Vituity and Tennille Lowery to participate in a meaningful #Brilliance26 panel.", url: "https://linkedin.com/posts/dianelmartin_brilliance26-womeninhealthcare-healthcareleadership-activity-7487899674251739136-ooK-" }],
+    status: "confirmed" },
+  { name: "Maureen Bell", linkedin: "linkedin.com/in/maureen-bell-58536754", instagram: "",
+    photo: "images/speakers/maureen-bell.jpg",
+    posts: [{ platform: "linkedin", type: "Carousel", date: "2026-04-15", snippet: "The room was packed for our Becker's Healthcare \"Leading with #BRILLIANCE\" panel!... Women are #creatingthefuture of #health. I would love to continue this discussion at #BRILLIANCE26 in Atlanta.", url: "https://www.linkedin.com/posts/maureen-bell-md-58536754_brilliance-womeninleadership-creatingthefuture-activity-7450317101933694976-ARoK" }],
+    status: "confirmed" },
+  { name: "Nicole \"Nicki\" Braxley", linkedin: "linkedin.com/in/nicole-braxley-21449325b", instagram: "",
+    photo: "images/speakers/nicole-braxley.jpg",
+    posts: [], status: "pending" },
+  { name: "Nicole Franks", linkedin: "linkedin.com/in/nicole-m-franks-md-4759b09", instagram: "",
+    photo: "images/speakers/nicole-franks.jpg",
+    posts: [], status: "pending" },
+  { name: "Payton McGowen (Hoffner)", linkedin: "linkedin.com/in/payton-mcgowen-hoffner-aa08b0174", instagram: "",
+    photo: "images/speakers/payton-mcgowen.jpg",
+    posts: [], status: "pending" },
+  { name: "Tamika Newson", linkedin: "linkedin.com/in/tamikanewson", instagram: "",
+    photo: "images/speakers/tamika-newson.jpg",
+    posts: [{ platform: "linkedin", type: "Repost", date: "2026-07-18", snippet: "What an honor to be a part of this event with these amazing and accomplished women! #Brilliance26", url: "https://linkedin.com/posts/tamikanewson_what-an-honor-to-be-a-part-of-this-event-activity-7484235593133101056-NOVx" }],
+    status: "confirmed" },
+  { name: "Alina Moran", linkedin: "linkedin.com/in/alinamoran", instagram: "",
+    photo: "images/speakers/alina-moran.jpg",
+    posts: [], status: "pending" },
+  { name: "Angie Cosca", linkedin: "linkedin.com/in/angeline-cosca", instagram: "", posts: [], status: "pending" },
+  { name: "Andrea Turner", linkedin: "linkedin.com/in/andrea-turner-jd-mba-cnmt-6621641a2", instagram: "",
+    photo: "images/speakers/andrea-turner.jpg",
+    posts: [], status: "pending" },
+  { name: "Debra Green Oliphant", linkedin: "linkedin.com/in/debra-green-oliphant", instagram: "",
+    photo: "images/speakers/debra-green-oliphant.jpg",
+    posts: [], status: "pending" },
+  { name: "Lara Khouri", linkedin: "linkedin.com/in/lara-m-khouri", instagram: "",
+    photo: "images/speakers/lara-khouri.jpg",
+    posts: [], status: "pending" },
+  { name: "Nanea Reeves", linkedin: "linkedin.com/in/naneareeves", instagram: "", posts: [], status: "pending" },
+  { name: "Sara Duarte Rico", linkedin: "linkedin.com/in/sara-rico", instagram: "",
+    photo: "images/speakers/sara-duarte-rico.jpg",
+    posts: [], status: "pending" }
+];
+
+// ---------------------------------------------------------------------------
+// ENGINE — pure functions, no DOM access
+// ---------------------------------------------------------------------------
+const Engine = {
+  filterByStatus(data, status) {
+    if (status === "all") return data;
+    return data.filter(s => s.status === status);
+  },
+  filterBySearch(data, query) {
+    if (!query) return data;
+    const q = query.toLowerCase();
+    return data.filter(s => s.name.toLowerCase().includes(q));
+  },
+  summarize(data) {
+    return {
+      total: data.length,
+      confirmed: data.filter(s => s.status === "confirmed").length,
+      review: data.filter(s => s.status === "review").length,
+      pending: data.filter(s => s.status === "pending").length
+    };
+  },
+  totalPosts(data) {
+    return data.reduce((sum, s) => sum + s.posts.length, 0);
+  }
+};
+
+// ---------------------------------------------------------------------------
+// TEST RUNNER
+// ---------------------------------------------------------------------------
+const TestRunner = {
+  run() {
+    const tests = [];
+    const assert = (id, description, actual, expected) => {
+      const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      tests.push({ id, description, actual, expected, pass });
+    };
+
+    const sample = [
+      { name: "Alpha", status: "confirmed", posts: [{}] },
+      { name: "Beta", status: "pending", posts: [] },
+      { name: "Gamma", status: "review", posts: [] },
+      { name: "Delta", status: "pending", posts: [{}, {}] }
+    ];
+
+    assert("SUM-1", "Total count", Engine.summarize(sample).total, 4);
+    assert("SUM-2", "Confirmed count", Engine.summarize(sample).confirmed, 1);
+    assert("SUM-3", "Pending count", Engine.summarize(sample).pending, 2);
+    assert("SUM-4", "Review count", Engine.summarize(sample).review, 1);
+    assert("FLT-1", "Filter by status=pending", Engine.filterByStatus(sample, "pending").length, 2);
+    assert("FLT-2", "Filter by status=all returns everything", Engine.filterByStatus(sample, "all").length, 4);
+    assert("SRCH-1", "Search matches case-insensitively", Engine.filterBySearch(sample, "alpha").length, 1);
+    assert("SRCH-2", "Search with no query returns all", Engine.filterBySearch(sample, "").length, 4);
+    assert("TOT-1", "Total posts across sample", Engine.totalPosts(sample), 3);
+    assert("DATA-1", "Live speaker roster has 20 entries", SPEAKER_DATA.length, 20);
+    assert("DATA-2", "Confirmed-in-data matches badge count",
+      Engine.summarize(SPEAKER_DATA).confirmed, SPEAKER_DATA.filter(s => s.status === "confirmed").length);
+
+    const passed = tests.filter(t => t.pass).length;
+    return { total: tests.length, passed, failed: tests.length - passed, results: tests };
+  }
+};
+
+// ---------------------------------------------------------------------------
+// ICONS
+// ---------------------------------------------------------------------------
+const LINKEDIN_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>';
+const INSTAGRAM_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
+
+// ---------------------------------------------------------------------------
+// RENDER
+// ---------------------------------------------------------------------------
+function initials(name) {
+  return name.split(" ").map(w => w.replace(/[^A-Za-z]/g, "")).filter(Boolean).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+}
+
+function linkedinUrl(s) { return s.linkedin ? `https://${s.linkedin}` : null; }
+function instagramUrl(s) { return s.instagram ? `https://instagram.com/${s.instagram.replace(/^@/, "")}` : null; }
+
+function photoTile(s) {
+  if (s.photo) return `<img class="photo-tile" src="${s.photo}" alt="${s.name}">`;
+  return `<div class="photo-tile placeholder">${initials(s.name)}</div>`;
+}
+
+function platformLinks(s) {
+  const li = linkedinUrl(s);
+  const ig = instagramUrl(s);
+  return `<div class="platform-links">
+    ${li ? `<a class="icon-link" href="${li}" target="_blank" rel="noopener" aria-label="${s.name} on LinkedIn">${LINKEDIN_ICON}</a>` : ""}
+    ${ig ? `<a class="icon-link" href="${ig}" target="_blank" rel="noopener" aria-label="${s.name} on Instagram">${INSTAGRAM_ICON}</a>` : ""}
+  </div>`;
+}
+
+function renderSummary(data) {
+  const s = Engine.summarize(data);
+  const totalPosts = Engine.totalPosts(data);
+  const el = document.getElementById('summaryRow');
+  el.innerHTML = `
+    <span class="hero-num gradient-text">${totalPosts}</span>
+    <span class="hero-label">Brilliance26 post${totalPosts === 1 ? "" : "s"} found across ${s.total} speakers</span>
+    <span class="hero-sub">${s.confirmed} of ${s.total} confirmed · ${s.pending} pending</span>`;
+}
+
+function renderSpeakers(data) {
+  const grid = document.getElementById('speakerGrid');
+  if (data.length === 0) {
+    grid.innerHTML = `<div class="no-post">No speakers match this filter.</div>`;
+    return;
+  }
+  grid.innerHTML = data.map(s => {
+    const postsHtml = s.posts.length
+      ? s.posts.map(p => `
+        <div class="post-item ${p.platform}">
+          ${p.type ? `<span class="post-type">${p.type}</span>` : ""}
+          <span class="post-snippet">"${p.snippet}"</span><br>
+          <a class="post-link" href="${p.url}" target="_blank" rel="noopener">View post →</a>
+          <span style="color:var(--text-muted); margin-left:8px;">${p.date}</span>
+        </div>`).join('')
+      : (s.note ? `<div class="ambiguous">${s.note}</div>` : `<div class="no-post">No matching post found yet.</div>`);
+
+    const badgeClass = s.status === "confirmed" ? "confirmed" : s.status === "review" ? "review" : "pending";
+    const badgeText = s.status === "confirmed" ? "Confirmed" : s.status === "review" ? "Review" : "Pending";
+
+    return `
+      <div class="speaker-card">
+        ${photoTile(s)}
+        <div>
+          <div class="speaker-name">${s.name}</div>
+          ${platformLinks(s)}
+          <div style="margin-top:10px;">${postsHtml}</div>
+        </div>
+        <span class="badge ${badgeClass}">${badgeText}</span>
+      </div>`;
+  }).join('');
+}
+
+function applyFilters() {
+  const query = document.getElementById('searchInput').value;
+  const status = document.getElementById('statusFilter').value;
+  let data = Engine.filterBySearch(SPEAKER_DATA, query);
+  data = Engine.filterByStatus(data, status);
+  renderSpeakers(data);
+}
+
+function renderTests() {
+  const result = TestRunner.run();
+  const summary = document.getElementById('testSummary');
+  const results = document.getElementById('testResults');
+  summary.textContent = `Test harness — ${result.passed}/${result.total} passed`;
+  results.innerHTML = result.results.map(t => `
+    <div class="test-row">
+      <span class="${t.pass ? 'test-pass' : 'test-fail'}">${t.pass ? '✓' : '✗'}</span>
+      <span>${t.id}: ${t.description}</span>
+    </div>`).join('');
+}
+
+// ---------------------------------------------------------------------------
+// INIT
+// ---------------------------------------------------------------------------
+document.getElementById('lastCheckedText').textContent =
+  `Last checked ${META.lastChecked} · ${META.checkFrequency}`;
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+renderSummary(SPEAKER_DATA);
+renderSpeakers(SPEAKER_DATA);
+renderTests();
+</script>
+</body>
+</html>
