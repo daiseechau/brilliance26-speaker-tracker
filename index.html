@@ -417,6 +417,14 @@ const SPEAKER_DATA = [
   { name: "Nanea Reeves", linkedin: "linkedin.com/in/naneareeves", instagram: "", posts: [], status: "pending" },
   { name: "Sara Duarte Rico", linkedin: "linkedin.com/in/sara-rico", instagram: "",
     photo: "images/speakers/sara-duarte-rico.jpg",
+    posts: [], status: "pending" },
+  { name: "Judith Joseph", linkedin: "linkedin.com/in/drjudithjosephmdmba", instagram: "@drjudithjoseph",
+    posts: [], status: "pending" },
+  { name: "Lauren Smith", linkedin: "linkedin.com/in/lauren-smith-md-mba-2a71402", instagram: "",
+    posts: [], status: "pending" },
+  { name: "Maria Sexton", linkedin: "linkedin.com/in/mariasexton", instagram: "",
+    posts: [], status: "pending" },
+  { name: "Yolanda Milton Christopher", linkedin: "linkedin.com/in/yolandamilton", instagram: "@yolandachristopher",
     posts: [], status: "pending" }
 ];
 
@@ -473,7 +481,7 @@ const TestRunner = {
     assert("SRCH-1", "Search matches case-insensitively", Engine.filterBySearch(sample, "alpha").length, 1);
     assert("SRCH-2", "Search with no query returns all", Engine.filterBySearch(sample, "").length, 4);
     assert("TOT-1", "Total posts across sample", Engine.totalPosts(sample), 3);
-    assert("DATA-1", "Live speaker roster has 20 entries", SPEAKER_DATA.length, 20);
+    assert("DATA-1", "Live speaker roster has 24 entries", SPEAKER_DATA.length, 24);
     assert("DATA-2", "Confirmed-in-data matches badge count",
       Engine.summarize(SPEAKER_DATA).confirmed, SPEAKER_DATA.filter(s => s.status === "confirmed").length);
 
